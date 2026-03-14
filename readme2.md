@@ -4,7 +4,7 @@
 
 ---
 
-## Objective and Motivation
+## 1. Objective and Motivation
 
 This project studies discrete delta hedging performance under volatility model misspecification. The goal is to quantify how calibration error or the use of a flat Black–Scholes volatility instead of a stochastic volatility model — translates into realized hedging error when the true dynamics follow SABR. Rather than comparing prices at inception, the focus is on full P&L distributions from dynamically hedging a short at-the-money option under competing models.
 
@@ -20,7 +20,7 @@ The objective is to quantify how model misspecification translates into hedging 
 
 ---
 
-## Model Setup
+## 2. Model Setup
 
 The underlying forward price is modeled under the risk-neutral forward measure using the lognormal SABR framework:
 
@@ -38,7 +38,7 @@ An ATM call option is then priced by Monte Carlo simulation under these dynamics
 
 ---
 
-## Methodology
+## 3. Methodology
 
 Using the calibrated SABR parameters, forward paths are simulated via Euler discretization to generate terminal payoffs and dynamic hedge paths.
 
@@ -52,7 +52,7 @@ Deltas are computed using Black-76 formulas with either Hagan-implied volatiliti
 
 ---
 
-## Results
+## 4. Results
 
 The correctly specified SABR hedge produces a P&L distribution centered close to zero with the smallest dispersion, reflecting consistency between pricing and hedging under the true stochastic volatility dynamics. Introducing parameter misspecification increases both variance and tail asymmetry. The constant-volatility Black–Scholes hedge performs worst, as it fails to capture smile and volatility-of-volatility effects. Importantly, all strategies may price the option reasonably at inception, yet their risk profiles differ materially once dynamic hedging begins. This highlights that model risk manifests primarily through hedging performance rather than initial valuation error.
 
@@ -64,6 +64,6 @@ The correctly specified SABR hedge produces a P&L distribution centered close to
 
 ---
 
-## Conclusion
+## 5. Conclusion
 
 This study demonstrates that model risk is fundamentally a hedging problem rather than a pricing problem. Even when competing models produce similar option values at inception, their dynamic risk profiles can differ substantially once discrete hedging is introduced. Stochastic volatility structure and accurate calibration materially reduce P&L dispersion and tail exposure, while simplified or misspecified models amplify hedging error in economically meaningful ways. By linking volatility modeling assumptions directly to realized risk outcomes, this project emphasizes the practical importance of model choice in derivatives trading and risk management.

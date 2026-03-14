@@ -1,5 +1,4 @@
-# Delta Hedging Under Model Mismatch  
-## A SABR vs. Black–Scholes Study
+# Delta Hedging Under Model Mismatch: SABR vs. Black–Scholes Study
 
 **Author:** Pratit Goswami  
 

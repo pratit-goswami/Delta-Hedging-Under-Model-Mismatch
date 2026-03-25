@@ -1,26 +1,18 @@
-# Delta Hedging Under Model Mismatch: SABR vs. Black–Scholes Study
+# Delta Hedging Under Model Mismatch: A SABR vs. Black–Scholes Study
 
 **Author:** Pratit Goswami  
 
 ---
 
-## 1. Objective and Motivation
+## Objective and Motivation
 
-This project studies discrete delta hedging performance under volatility model misspecification. The goal is to quantify how calibration error or the use of a flat Black–Scholes volatility instead of a stochastic volatility model — translates into realized hedging error when the true dynamics follow SABR. Rather than comparing prices at inception, the focus is on full P&L distributions from dynamically hedging a short at-the-money option under competing models.
+This project studies **delta hedging under model mismatch** using live **AAPL options data**. The main objective is to compare hedge performance under two different volatility-model assumptions: **Black-Scholes**, which assumes volatility stays constant, and **SABR**, which allows volatility to change over time and across strikes. By placing these two models side by side, the project aims to show how model choice can affect hedging performance in practice.
 
-In practice, traders hedge using model-implied deltas, and small modeling errors can compound into systematic bias or amplified tail risk. Evaluating the dispersion and skew of hedging outcomes therefore provides a direct measure of model risk: not whether a model prices correctly, but whether it meaningfully controls risk.
-
-We compare three hedging approaches:
-
-1. **Correctly calibrated SABR deltas**
-2. **Miscalibrated SABR deltas**
-3. **Black–Scholes deltas with constant ATM implied volatility**
-
-The objective is to quantify how model misspecification translates into hedging P&L dispersion and tail risk.
+The motivation for this work comes from the fact that real option markets usually show a **volatility smile or skew**, which is not captured well by the standard Black-Scholes framework. This matters because hedging decisions are often based on model outputs such as delta, and if the model does not reflect market behavior well, hedge performance may suffer. The project is especially focused on **out-of-the-money put options**, since these contracts are often more sensitive to downside moves and changing volatility conditions.
 
 ---
 
-## 2. Model Setup
+## Model Setup
 
 The underlying forward price is modeled under the risk-neutral forward measure using the lognormal SABR framework:
 
@@ -34,36 +26,29 @@ with fixed elasticity parameter $\beta$.
 
 The model captures stochastic volatility, skew, and smile effects observed in equity options markets. For a selected AAPL expiry, Black–Scholes implied volatilities are extracted from the option chain and the SABR parameters ($\alpha, \rho, \nu$) are calibrated via nonlinear least squares using the Hagan lognormal implied volatility approximation. The calibrated parameters define the “true” market dynamics.
 
-An ATM call option is then priced by Monte Carlo simulation under these dynamics to ensure consistency between the pricing and hedging experiment.
+An OTM put option is then priced by Monte Carlo simulation under these dynamics to ensure consistency between the pricing and hedging experiment.
 
 ---
 
-## 3. Methodology
+## Methodology
 
-Using the calibrated SABR parameters, forward paths are simulated via Euler discretization to generate terminal payoffs and dynamic hedge paths.
+The workflow begins by collecting the live option-chain data, identifying a suitable expiry, and extracting implied volatilities across strikes. These market volatilities are used to build the observed put smile. After that, the **SABR model is calibrated** to the smile by fitting its parameters so that its implied volatilities match the market data as closely as possible. In parallel, the Black-Scholes setup uses the implied volatility of the selected OTM put as its flat volatility input.
 
-A short ATM call position is delta-hedged discretely (approximately daily) under three models:
-
-- Correctly calibrated SABR  
-- Deliberately miscalibrated SABR  
-- Black–Scholes with constant ATM volatility  
-
-Deltas are computed using Black-76 formulas with either Hagan-implied volatilities or constant volatility inputs. The hedge is implemented as a self-financing strategy with cash accruing at the risk-free rate. For each model, the full distribution of final hedging P&L is computed across Monte Carlo paths, allowing direct comparison of mean bias, variance, and tail risk attributable solely to model specification error.
+Once the models are defined, the project uses **Monte Carlo simulation** to generate stock-price paths under the selected framework. At each rebalance step, the option hedge is updated using the model delta, and the cash account and hedge position are tracked over time. At maturity, the final hedging **P\&L** is calculated for each simulated path. The results are then summarized using risk and performance measures such as **mean P\&L, standard deviation, and downside tail metrics**, which allow the two hedging approaches to be compared in a clear and practical way.
 
 ---
 
-## 4. Results
+## Results
 
-The correctly specified SABR hedge produces a P&L distribution centered close to zero with the smallest dispersion, reflecting consistency between pricing and hedging under the true stochastic volatility dynamics. Introducing parameter misspecification increases both variance and tail asymmetry. The constant-volatility Black–Scholes hedge performs worst, as it fails to capture smile and volatility-of-volatility effects. Importantly, all strategies may price the option reasonably at inception, yet their risk profiles differ materially once dynamic hedging begins. This highlights that model risk manifests primarily through hedging performance rather than initial valuation error.
+The results show that hedge performance depends on several factors, including the volatility model, the option strike, the maturity, and the rebalancing frequency. In the AAPL OTM put scenarios tested in this project, the **Black-Scholes** and **SABR-based** hedges often produced similar average P\&L values, but differences appeared in the spread of outcomes and in measures of downside risk. This suggests that even when average performance looks close, the model used for hedging can still affect the stability of results.
 
-### Key Observations
-
-- **SABR (true parameters):** Near-zero mean P&L, lowest standard deviation, comparatively symmetric distribution, 
-- **SABR (miscalibrated):** Higher variance, mild bias, thicker tails,  
-- **Black–Scholes (ATM vol):** Largest dispersion and most pronounced downside tail risk.  
+The experiments also showed that model differences become easier to see when the option is moved further out of the money or when the maturity is extended. In those cases, the option becomes more sensitive to changes in volatility and skew, which makes the limitations of a flat-volatility model more noticeable. Overall, the results support the idea that hedging performance should not be judged only by average P\&L, but also by how the model affects **volatility of hedge outcomes and tail losses**.
 
 ---
 
-## 5. Conclusion
+## Conclusion
 
-This study demonstrates that model risk is fundamentally a hedging problem rather than a pricing problem. Even when competing models produce similar option values at inception, their dynamic risk profiles can differ substantially once discrete hedging is introduced. Stochastic volatility structure and accurate calibration materially reduce P&L dispersion and tail exposure, while simplified or misspecified models amplify hedging error in economically meaningful ways. By linking volatility modeling assumptions directly to realized risk outcomes, this project emphasizes the practical importance of model choice in derivatives trading and risk management.
+This project provides a practical example of how option hedging can be studied using **live market data, volatility-model calibration, and Monte Carlo simulation**. It shows that while **Black-Scholes** remains a useful benchmark because of its simplicity and wide use, a more flexible model such as **SABR** can offer additional insight when market volatility is not flat across strikes. This is especially relevant for contracts such as OTM puts, where volatility skew plays a larger role in option pricing and hedge behavior.
+
+The main takeaway is that hedge quality depends not only on the hedge formula itself, but also on the volatility model, the option setup, and the rebalancing design. This makes the project a useful introduction to **quantitative finance, derivatives modeling, and risk analysis in Python**. It also creates a strong foundation for future extensions, such as testing deeper OTM options, different hedge frequencies, transaction costs, or alternative stochastic-volatility models.
+

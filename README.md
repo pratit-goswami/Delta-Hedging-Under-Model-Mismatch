@@ -42,6 +42,15 @@ Once the models are defined, the project uses **Monte Carlo simulation** to gene
 
 The results show that hedge performance depends on several factors, including the volatility model, the option strike, the maturity, and the rebalancing frequency. In the AAPL OTM put scenarios tested in this project, the **Black-Scholes** and **SABR-based** hedges often produced similar average P\&L values, but differences appeared in the spread of outcomes and in measures of downside risk. This suggests that even when average performance looks close, the model used for hedging can still affect the stability of results.
 
+### Hedging P\&L Comparison
+| Metric | SABR Delta (OTM Put) | BS Flat-Vol Delta (OTM Put) |
+|---|---:|---:|
+| Mean | 0.398877 | 0.410757 |
+| Std. Dev. | 6.091599 | 5.923109 |
+| 5th Percentile | -8.602132 | -8.908358 |
+| Median | 1.484764 | 1.445584 |
+| 95th Percentile | 5.587819 | 5.752187 |
+
 The experiments also showed that model differences become easier to see when the option is moved further out of the money or when the maturity is extended. In those cases, the option becomes more sensitive to changes in volatility and skew, which makes the limitations of a flat-volatility model more noticeable. Overall, the results support the idea that hedging performance should not be judged only by average P\&L, but also by how the model affects **volatility of hedge outcomes and tail losses**.
 
 ---
